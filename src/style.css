@@ -1,0 +1,109 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+  overflow: hidden;
+  background-color: black;
+}
+
+body {
+  position: relative
+}
+
+header{
+    pointer-events: all;
+    z-index: 5;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+/* turns on/off orbit controls... */
+.webgl
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+
+#container {
+    height: 100vh;
+    /* position: relative; */
+    /* scroll-snap-type: y mandatory;  */
+}
+
+/* Section Styling */
+
+.btn {
+  display: inline-block;
+  padding: 0.25em 0.4em; /* Adjust padding values to make the button smaller */
+  font-size: 20px;
+  font-weight: 700;
+  background-color: yellow;
+  color: black;
+  text-decoration: none;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease;
+  /* margin-top: 250px; */
+}
+
+.btn:hover {
+
+  @media (min-width: 900px) {
+    background-color: rgb(70, 65, 23);
+  }
+
+}
+
+
+.oval-button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: yellow;
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 60px;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+  z-index: 99999;
+}
+
+.oval-button:hover {
+  
+  @media (min-width: 900px) {
+    background-color: white;
+  }
+
+}
+
+.section h2{
+  font-size: 50px;
+  font-weight: 600;
+
+  @media (max-width: 767px) {
+    font-size: 25px;
+    padding-left: 8px;
+  }
+}
+
+/* Partially complete */
+.button-wrapper {
+  position: fixed;
+  top: 15%;
+  left: 15%;
+  transform: translate(-50%, -50%);
+  transition: background-color 1s ease;
+}
