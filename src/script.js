@@ -55,12 +55,12 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 scene.background = new THREE.Color(0x191919)
 
-const light = new THREE.PointLight( 0xffff00, 1, 100 );
-light.position.set(0, 12, 8 );
+const light = new THREE.PointLight( "white", 1, 100 );
+light.position.set(1, 6, 2);
 scene.add( light );
 light.castShadow = true;
-light.shadow.mapSize.width = 512;  
-light.shadow.mapSize.height = 512; 
+light.shadow.mapSize.width = 1024;  
+light.shadow.mapSize.height = 1024; 
 light.shadow.camera.near = 1;       
 light.shadow.camera.far = 20;      
 light.shadow.bias = -0.001;
@@ -89,11 +89,10 @@ new RGBELoader()
 } );
 
 
-
 // Objects
 const objectsDistance = 7
 
-let model
+let triangle
 loader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/threejs_logo.glb?v=1675285403141', function (gltf) {
 
     scene.add(gltf.scene)
@@ -103,8 +102,13 @@ loader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/thre
         if (obj.isMesh) {
           obj.castShadow = true
           obj.receiveShadow = true
-          model = obj
-          model.position.set(0, -0.6, 2)
+          triangle = obj
+          triangle.position.set(0, 2, 0)
+          triangle.scale.set(0.5,0.5,0.5)
+          meshGroup1.add(triangle)
+          meshGroup0.add(triangle.clone())
+          meshGroup2.add(triangle.clone())
+          meshGroup3.add(triangle.clone())
         }
     })
 })
@@ -116,21 +120,9 @@ function loadGLBModel(url) {
 }
 
 const meshGroup0 = new THREE.Group()
-loadIconObject("/objects/permission.glb",meshGroup0,[0, -0.6, 0]);
-meshGroup0.name = "project0"
-
 const meshGroup1 = new THREE.Group()
-loadIconObject("/objects/entoraj.glb",meshGroup1,[0, -0.6, 0]);
-meshGroup1.name = "project1"
-
 const meshGroup2 = new THREE.Group()
-loadIconObject("/objects/hero.glb",meshGroup2,[0, -0.6, 0]);
-meshGroup2.name = "project2"
-
 const meshGroup3 = new THREE.Group()
-loadIconObject("/objects/statefarm.glb",meshGroup3,[0, -0.6, 0]);
-meshGroup3.name = "project3"
-
 
 meshGroup0.position.x = - objectsDistance * -1
 meshGroup1.position.x = - objectsDistance * 0
@@ -142,43 +134,6 @@ scene.add(meshGroup0,meshGroup1, meshGroup2, meshGroup3)
 
 var sectionMeshes = [ meshGroup0, meshGroup1, meshGroup2, meshGroup3 ]  
 
-/**
- * Lights
- */
-
-// Ambient light
-// const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
-// scene.add(ambientLight)
-
-// Directional light Top Right
-// const directionalLightTopRight = new THREE.DirectionalLight('#b9d5ff', 1)
-// directionalLightTopRight.position.set(0.5, -0.25, 4)
-
-// const target = new THREE.Vector3(0, 0, 0); // Set the new target coordinates
-// directionalLightTopRight.target.position.copy(target);
-// scene.add(directionalLightTopRight);
-
-// // Directional light Helper
-// // const directionalLightHelperTop = new THREE.DirectionalLightHelper(directionalLightTopRight, 0.2);
-// // scene.add(directionalLightHelperTop)
-
-// //Directional light Top Left
-// const directionalLightTopLeft = new THREE.DirectionalLight('#b9d5ff', 1)
-// directionalLightTopLeft.position.set(-0.5, -0.25, 4)
-
-
-// directionalLightTopLeft.target.position.copy(target);
-// scene.add(directionalLightTopLeft);
-
-
-// Directional light Helper
-// const directionalLightHelperTopLeft = new THREE.DirectionalLightHelper(directionalLightTopLeft, 0.2);
-// scene.add(directionalLightHelperTopLeft) 
-
-
-/**
- * Sizes
- */
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -213,13 +168,13 @@ scene.add(cameraGroup)
 // const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 100)
 camera.position.x = 0
-camera.position.y = 0
-camera.position.z = 4 //4
+camera.position.y = 3
+camera.position.z = 6
 scene.add(camera)
 
 
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+// const controls = new OrbitControls(camera, canvas)
+// controls.enableDamping = true
 
 
 /**
@@ -277,17 +232,17 @@ const tick = () =>
         mesh.rotation.y += deltaTime * .6
     }
 
-    if(model){
-      model.rotation.y += deltaTime * .6
+    // if(triangle){
+    //   triangle.rotation.y += deltaTime * .6
 
-    }
+    // }
   
     TWEEN.update();
 
     // Render
     renderer.render(scene, camera)
 
-    controls.update(); 
+    // controls.update(); 
 
 
     // Call tick again on the next frame
@@ -326,19 +281,6 @@ function loadIconObject(fileLocation, groupName,positionArray){
 }
 
 
-function loadIconObjectNEW(fileLocation){
-
-  gltfLoader.load(
-      fileLocation,
-      (gltf) => {
-          var object = gltf.scene;
-          console.log(object)
-          return object;
-  })
-
-
-}
-
   function moveItems(array, up) {
     if (up) {
       const lastItem = array.pop();
@@ -361,11 +303,10 @@ function loadIconObjectNEW(fileLocation){
 
       
     }else{
-      meshGroup0.scale.set(1.75,1.75,1.75)
-      meshGroup1.scale.set(1.75,1.75,1.75)
-      meshGroup2.scale.set(1.75,1.75,1.75)
-      meshGroup3.scale.set(1.75,1.75,1.75)
-
+      meshGroup0.scale.set(1,1,1)
+      meshGroup1.scale.set(1,1,1)
+      meshGroup2.scale.set(1,1,1)
+      meshGroup3.scale.set(1,1,1)
     }
   }
     
