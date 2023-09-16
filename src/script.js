@@ -4,14 +4,26 @@ import gsap from 'gsap'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import TWEEN from 'tween.js'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
-
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 // Create a frustum object based on the camera's projection matrix
 const frustum = new THREE.Frustum();
 const cameraViewProjectionMatrix = new THREE.Matrix4();
 
-var projectOpen = false;
-var openSection = 1;
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
+// import * as THREE from 'three'
+// import { GLTFLoader } from "https://unpkg.com/three@0.145.0/examples/jsm/loaders/GLTFLoader.js"; 
+// import { TWEEN } from "https://unpkg.com/three@0.145.0/examples/jsm/libs/tween.module.min.js";
+// import { DRACOLoader } from 'https://unpkg.com/three@0.145.0/examples/jsm/loaders/DRACOLoader.js'
+// import { RGBELoader } from 'https://unpkg.com/three@0.145.0/examples/jsm/loaders/RGBELoader.js';
+
+
+//// DRACO LOADER TO LOAD DRACO COMPRESSED MODELS FROM BLENDER
+const dracoLoader = new DRACOLoader()
+const loader = new GLTFLoader()
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
+dracoLoader.setDecoderConfig({ type: 'js' })
+loader.setDRACOLoader(dracoLoader)
 
 const gltfLoader = new GLTFLoader()
 
@@ -41,28 +53,61 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+scene.background = new THREE.Color(0x191919)
+
+const light = new THREE.PointLight( 0xffff00, 1, 100 );
+light.position.set(0, 12, 8 );
+scene.add( light );
+light.castShadow = true;
+light.shadow.mapSize.width = 512;  
+light.shadow.mapSize.height = 512; 
+light.shadow.camera.near = 1;       
+light.shadow.camera.far = 20;      
+light.shadow.bias = -0.001;
+
+//point light helper
+const helper = new THREE.PointLightHelper( light, 1 );
+scene.add( helper );
+
+/////////////////////////////////////////////////////////////////////////
+///// CREATING THE FLOOR
+const geometry = new THREE.PlaneGeometry( 80, 80 );
+const material = new THREE.ShadowMaterial( {color: 0x000000, side: THREE.DoubleSide, opacity: 0.5} );
+const plane = new THREE.Mesh( geometry, material );
+scene.add(plane);
+plane.receiveShadow = true
+plane.rotation.x = -Math.PI /2
 
 
-/**
- * Objects
- */
-// Texture
-const textureLoader = new THREE.TextureLoader()
-const gradientTexture = textureLoader.load('textures/gradients/3.jpg')
-gradientTexture.magFilter = THREE.NearestFilter
+/////////////////////////////////////////////////////////////////////////
+///// LOADING THE TEXTURE FOR THE ENVIRONMENT
+new RGBELoader()
+    .load( 'https://cdn.glitch.global/df35b9e1-0fa8-49d1-b430-bed29251dfb5/gem_2.hdr?v=1675257556766', function ( texture ) {
 
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      scene.environment = texture;
+} );
 
-// // Material
-// const material = new THREE.MeshToonMaterial({
-//     color: parameters.materialColor,
-//     gradientMap: gradientTexture
-// })
 
 
 // Objects
 const objectsDistance = 7
 
-var object1; 
+let model
+loader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/threejs_logo.glb?v=1675285403141', function (gltf) {
+
+    scene.add(gltf.scene)
+  
+    gltf.scene.traverse((obj) => {
+      
+        if (obj.isMesh) {
+          obj.castShadow = true
+          obj.receiveShadow = true
+          model = obj
+          model.position.set(0, -0.6, 2)
+        }
+    })
+})
 
 function loadGLBModel(url) {
   return new Promise((resolve, reject) => {
@@ -106,28 +151,28 @@ var sectionMeshes = [ meshGroup0, meshGroup1, meshGroup2, meshGroup3 ]
 // scene.add(ambientLight)
 
 // Directional light Top Right
-const directionalLightTopRight = new THREE.DirectionalLight('#b9d5ff', 1)
-directionalLightTopRight.position.set(0.5, -0.25, 4)
+// const directionalLightTopRight = new THREE.DirectionalLight('#b9d5ff', 1)
+// directionalLightTopRight.position.set(0.5, -0.25, 4)
 
-const target = new THREE.Vector3(0, 0, 0); // Set the new target coordinates
-directionalLightTopRight.target.position.copy(target);
-scene.add(directionalLightTopRight);
+// const target = new THREE.Vector3(0, 0, 0); // Set the new target coordinates
+// directionalLightTopRight.target.position.copy(target);
+// scene.add(directionalLightTopRight);
+
+// // Directional light Helper
+// // const directionalLightHelperTop = new THREE.DirectionalLightHelper(directionalLightTopRight, 0.2);
+// // scene.add(directionalLightHelperTop)
+
+// //Directional light Top Left
+// const directionalLightTopLeft = new THREE.DirectionalLight('#b9d5ff', 1)
+// directionalLightTopLeft.position.set(-0.5, -0.25, 4)
+
+
+// directionalLightTopLeft.target.position.copy(target);
+// scene.add(directionalLightTopLeft);
+
 
 // Directional light Helper
-const directionalLightHelperTop = new THREE.DirectionalLightHelper(directionalLightTopRight, 0.2);
-// scene.add(directionalLightHelperTop)
-
-//Directional light Top Left
-const directionalLightTopLeft = new THREE.DirectionalLight('#b9d5ff', 1)
-directionalLightTopLeft.position.set(-0.5, -0.25, 4)
-
-
-directionalLightTopLeft.target.position.copy(target);
-scene.add(directionalLightTopLeft);
-
-
-// Directional light Helper
-const directionalLightHelperTopLeft = new THREE.DirectionalLightHelper(directionalLightTopLeft, 0.2);
+// const directionalLightHelperTopLeft = new THREE.DirectionalLightHelper(directionalLightTopLeft, 0.2);
 // scene.add(directionalLightHelperTopLeft) 
 
 
@@ -166,28 +211,37 @@ scene.add(cameraGroup)
 
 // Base camera
 // const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 100)
 camera.position.x = 0
 camera.position.y = 0
 camera.position.z = 4 //4
 scene.add(camera)
 
 
-// const controls = new OrbitControls(camera, canvas)
-// controls.enableDamping = true
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
 
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    powerPreference: "high-performance",
-    alpha: true // transparent background
-})
 
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: "high-performance" }) // turn on antialias
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) //set pixel ratio
+renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
+renderer.toneMapping = THREE.LinearToneMapping
+renderer.toneMappingExposure = 1.2
+renderer.shadowMap.enabled = true; // Needs to be enabled
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+
+// const renderer = new THREE.WebGLRenderer({
+//     canvas: canvas,
+//     powerPreference: "high-performance",
+// })
+
+// renderer.setSize(sizes.width, sizes.height)
+// renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 // renderer.antialias = true;
 
 
@@ -223,12 +277,17 @@ const tick = () =>
         mesh.rotation.y += deltaTime * .6
     }
 
+    if(model){
+      model.rotation.y += deltaTime * .6
+
+    }
+  
     TWEEN.update();
 
     // Render
     renderer.render(scene, camera)
 
-    // controls.update();
+    controls.update(); 
 
 
     // Call tick again on the next frame
