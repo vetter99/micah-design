@@ -227,10 +227,10 @@ const tick = () =>
     previousTime = elapsedTime
 
     // // Animate meshes
-    for(const mesh of sectionMeshes)
-    {
-        mesh.rotation.y += deltaTime * .6
-    }
+    // for(const mesh of sectionMeshes)
+    // {
+    //     mesh.rotation.y += deltaTime * .2
+    // }
 
     // if(triangle){
     //   triangle.rotation.y += deltaTime * .6
@@ -368,4 +368,22 @@ function loadIconObject(fileLocation, groupName,positionArray){
           })
           .start(); // Start the animation
      }
+  }
+
+
+  // Objects follow the mouse movement
+
+  // Add an event listener to track mouse movement
+
+  // Add an event listener to track mouse movement
+  window.addEventListener('mousemove', onMouseMove);
+  
+  function onMouseMove(event) {
+    // Calculate the rotation angles based on mouse position
+    const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+    const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+  
+    // Apply the rotation to the object
+    meshGroup1.rotation.y = mouseX * 1;
+    meshGroup1.rotation.x = mouseY * .15;
   }
