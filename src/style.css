@@ -25,7 +25,6 @@ body {
 .oval-button {
   position: fixed;
   bottom: 20px;
-  left: 50%;
   transform: translateX(-50%);
   width: 120px;
   height: 60px;
@@ -40,6 +39,14 @@ body {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease;
   z-index: 99999;
+}
+
+.oval-button-forward{
+  left: 80%;
+}
+
+.oval-button-backward{
+  left: 20%;
 }
 
 .oval-button:hover {

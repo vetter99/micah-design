@@ -105,8 +105,8 @@ loader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/thre
           triangle = obj
           triangle.position.set(0, 2, 0)
           triangle.scale.set(0.5,0.5,0.5)
-          meshGroup1.add(triangle)
-          meshGroup0.add(triangle.clone())
+          meshGroup0.add(triangle)
+          meshGroup1.add(triangle.clone())
           meshGroup2.add(triangle.clone())
           meshGroup3.add(triangle.clone())
         }
@@ -124,15 +124,15 @@ const meshGroup1 = new THREE.Group()
 const meshGroup2 = new THREE.Group()
 const meshGroup3 = new THREE.Group()
 
-meshGroup0.position.x = - objectsDistance * -1
-meshGroup1.position.x = - objectsDistance * 0
-meshGroup2.position.x = - objectsDistance * 1
-meshGroup3.position.x = - objectsDistance * 2
+meshGroup0.position.x =   objectsDistance * -1
+meshGroup1.position.x =   objectsDistance * 0
+meshGroup2.position.x =   objectsDistance * 1
+meshGroup3.position.x =   objectsDistance * 2
 
 
 scene.add(meshGroup0,meshGroup1, meshGroup2, meshGroup3)
 
-var sectionMeshes = [ meshGroup0, meshGroup1, meshGroup2, meshGroup3 ]  
+var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]  
 
 const sizes = {
     width: window.innerWidth,
@@ -315,33 +315,41 @@ function loadIconObject(fileLocation, groupName,positionArray){
   }
 
   
-function showNextButton(show){
-  if(show){
-    document.getElementById("next-button").style.display = "block";
-  }else{
-    document.getElementById("next-button").style.display = "none";
-  } 
-}
-
-
-  const ovalButton = document.querySelector('.oval-button');
+  const forwardButton = document.querySelector('.oval-button-forward');
   
   // Add an event listener for the "click" event
-  ovalButton.addEventListener('click', function (){
-    manualNextProject();
+  forwardButton.addEventListener('click', function (){
+    manualNextProject(true);
   });
   
+  const backwardsButton = document.querySelector('.oval-button-backward');
+  
+  // Add an event listener for the "click" event
+  backwardsButton.addEventListener('click', function (){
+    manualNextProject(false);
+  });
+  
+
   // Function to handle the click event
-  function manualNextProject() {
+  function manualNextProject(forward) {
 
-    var xPosition = 0;
-
-    xPosition = 7;
+    
+    var xPosition = forward ? -7 : 7;
     currentSection++;
   
     // move top most mesh instantly to the bottom.
-    sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x - xPosition;
-    sectionMeshes = moveItems(sectionMeshes, false)
+    // TODO: make this work for backwards
+
+    sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
+
+    // if(forward){
+    //   sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
+    // }else{
+    //   sectionMeshes[sectionMeshes.length - 1].position.x = sectionMeshes[0].position.x + xPosition;
+    // }
+
+    // sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x - xPosition;
+    sectionMeshes = moveItems(sectionMeshes, !forward)
   
     for(const mesh of sectionMeshes){
       // console.log("position: " +  mesh.position.y);
