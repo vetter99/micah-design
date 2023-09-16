@@ -281,13 +281,13 @@ function loadIconObject(fileLocation, groupName,positionArray){
 }
 
 
-  function moveItems(array, up) {
-    if (up) {
-      const lastItem = array.pop();
-      array.unshift(lastItem);
-    } else {
+  function moveItems(array, forward) {
+    if (forward) {
       const firstItem = array.shift();
       array.push(firstItem);
+    } else {
+      const lastItem = array.pop();
+      array.unshift(lastItem);
     }
     return array;
   }
@@ -340,16 +340,14 @@ function loadIconObject(fileLocation, groupName,positionArray){
     // move top most mesh instantly to the bottom.
     // TODO: make this work for backwards
 
-    sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
-
-    // if(forward){
-    //   sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
-    // }else{
-    //   sectionMeshes[sectionMeshes.length - 1].position.x = sectionMeshes[0].position.x + xPosition;
-    // }
+    if(forward){
+      sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
+    }else{
+      sectionMeshes[sectionMeshes.length - 1].position.x = sectionMeshes[0].position.x - 7;
+    }
 
     // sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x - xPosition;
-    sectionMeshes = moveItems(sectionMeshes, !forward)
+    sectionMeshes = moveItems(sectionMeshes, forward)
   
     for(const mesh of sectionMeshes){
       // console.log("position: " +  mesh.position.y);
