@@ -40,7 +40,7 @@ cameraLight.position.set(0.5, 0, 0.866);
 
 
 const directionalLight = new THREE.DirectionalLight( "white", 0.1);
-directionalLight.position.set(-1, 3, 0);
+directionalLight.position.set(-2, 3, 0);
 
 scene.add(directionalLight);
 
@@ -99,8 +99,6 @@ gltfLoader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/
           triangle.position.set(0, 2, 0)
           triangle.scale.set(0.5,0.5,0.5)
           meshGroup0.add(triangle)
-          // meshGroup1.add(triangle.clone())
-          meshGroup2.add(triangle.clone())
           meshGroup3.add(triangle.clone())
         }
     })
@@ -116,12 +114,16 @@ meshGroup1.position.x =   objectsDistance * 0
 meshGroup2.position.x =   objectsDistance * 1
 meshGroup3.position.x =   objectsDistance * 2
 
+var currentMesh = meshGroup1;
 
 scene.add(meshGroup0,meshGroup1, meshGroup2, meshGroup3)
 var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]  
 
 
-loadIconObject("/objects/cup.glb",meshGroup1,[0, 1, 0]);
+loadIconObject("/objects/cup.glb",meshGroup1,[0, 0.5, 0])
+loadIconObject("/objects/test.glb",meshGroup2,[0, 1, 0]);
+
+
 
 
 const sizes = {
@@ -252,13 +254,8 @@ const tick = () =>
     // Animate meshes
     for(const mesh of sectionMeshes)
     {
-        mesh.rotation.y += deltaTime * .5
+        mesh.rotation.y += deltaTime * .2
     }
-
-    // if(triangle){
-    //   triangle.rotation.y += deltaTime * .6
-
-    // }
   
     TWEEN.update();
 
@@ -326,8 +323,8 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
       
     }else{
-      meshGroup1.scale.set(1,1,1)
-      meshGroup2.scale.set(1,1,1)
+      meshGroup1.scale.set(2,2,2)
+      meshGroup2.scale.set(0.1,0.1,0.1)
       meshGroup3.scale.set(1,1,1)
     }
   }
@@ -343,10 +340,9 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
     
     var xPosition = forward ? -7 : 7;
-    currentSection++;
-  
-    // move top most mesh instantly to the bottom.
-    // TODO: make this work for backwards
+    forward ? currentSection++ : currentSection--;
+    currentMesh = sectionMeshes[currentSection];
+    console.log(currentSection);
 
     if(forward){
       sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
@@ -427,8 +423,11 @@ function onMouseMove(event) {
     };
 
     // Apply rotation based on mouse movement
-    meshGroup1.rotation.x += deltaMouse.y * 0.001; // Adjust rotation sensitivity as needed
-    meshGroup1.rotation.y += deltaMouse.x * 0.01;
+
+    if(currentMesh){
+      currentMesh.rotation.x += deltaMouse.y * 0.001; // Adjust rotation sensitivity as needed
+      currentMesh.rotation.y += deltaMouse.x * 0.01;
+    }
 
     previousMousePosition = {
       x: event.clientX,
