@@ -13,15 +13,6 @@ body {
   position: relative
 }
 
-/* turns on/off orbit controls... */
-.webgl
-{
-    position: fixed;
-    top: 0;
-    left: 0;
-    outline: none;
-}
-
 .oval-button {
   position: fixed;
   bottom: 20px;

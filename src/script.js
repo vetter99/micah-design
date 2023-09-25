@@ -1,31 +1,23 @@
 import * as THREE from 'three'
-import * as dat from 'lil-gui'
-import gsap from 'gsap'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import TWEEN from 'tween.js'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
-// Create a frustum object based on the camera's projection matrix
-const frustum = new THREE.Frustum();
-const cameraViewProjectionMatrix = new THREE.Matrix4();
-
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
-// import * as THREE from 'three'
+
 // import { GLTFLoader } from "https://unpkg.com/three@0.145.0/examples/jsm/loaders/GLTFLoader.js"; 
 // import { TWEEN } from "https://unpkg.com/three@0.145.0/examples/jsm/libs/tween.module.min.js";
 // import { DRACOLoader } from 'https://unpkg.com/three@0.145.0/examples/jsm/loaders/DRACOLoader.js'
 // import { RGBELoader } from 'https://unpkg.com/three@0.145.0/examples/jsm/loaders/RGBELoader.js';
 
 
+
 //// DRACO LOADER TO LOAD DRACO COMPRESSED MODELS FROM BLENDER
 const dracoLoader = new DRACOLoader()
-const loader = new GLTFLoader()
+const gltfLoader = new GLTFLoader()
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
 dracoLoader.setDecoderConfig({ type: 'js' })
-loader.setDRACOLoader(dracoLoader)
-
-const gltfLoader = new GLTFLoader()
+gltfLoader.setDRACOLoader(dracoLoader)
 
 /**
  * Debug
@@ -37,42 +29,43 @@ const parameters = {
     materialColor: '#f0ff7e'
 }
 
-// gui
-//     .addColor(parameters, 'materialColor')
-//     .onChange(() =>
-//     {
-//         material.color.set(parameters.materialColor)
-//         particlesMaterial.color.set(parameters.materialColor)
-//     })
-
-/**
- * Base
- */
-// Canvas
-const canvas = document.querySelector('canvas.webgl')
-
 // Scene
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x191919)
+scene.background = new THREE.Color("lightgrey")
 
-const light = new THREE.PointLight( "white", 1, 100 );
-light.position.set(1, 6, 2);
-scene.add( light );
-light.castShadow = true;
-light.shadow.mapSize.width = 1024;  
-light.shadow.mapSize.height = 1024; 
-light.shadow.camera.near = 1;       
-light.shadow.camera.far = 20;      
-light.shadow.bias = -0.001;
+
+// Directional Light
+const cameraLight = new THREE.DirectionalLight( "white", 0.75);
+cameraLight.position.set(0.5, 0, 0.866);
+
+
+const directionalLight = new THREE.DirectionalLight( "white", 0.1);
+directionalLight.position.set(-1, 3, 0);
+
+scene.add(directionalLight);
+
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 2048;  
+directionalLight.shadow.mapSize.height = 2048; 
+directionalLight.shadow.camera.near = 1;       
+directionalLight.shadow.camera.far = 20;      
+directionalLight.shadow.bias = -0.001;
+// Remove the default ambient light from the scene
+
+
+// point light helper
+// const helper = new THREE.DirectionalLightHelper( light, 100 );
+// scene.add( helper );
+
 
 //point light helper
-const helper = new THREE.PointLightHelper( light, 1 );
-scene.add( helper );
+// const helper = new THREE.DirectionalLightHelper( light, 50 );
+// scene.add( helper );
 
 /////////////////////////////////////////////////////////////////////////
 ///// CREATING THE FLOOR
 const geometry = new THREE.PlaneGeometry( 80, 80 );
-const material = new THREE.ShadowMaterial( {color: 0x000000, side: THREE.DoubleSide, opacity: 0.5} );
+const material = new THREE.ShadowMaterial( {color: 0x000000, side: THREE.DoubleSide, opacity: 1} );
 const plane = new THREE.Mesh( geometry, material );
 scene.add(plane);
 plane.receiveShadow = true
@@ -81,19 +74,19 @@ plane.rotation.x = -Math.PI /2
 
 /////////////////////////////////////////////////////////////////////////
 ///// LOADING THE TEXTURE FOR THE ENVIRONMENT
-new RGBELoader()
-    .load( 'https://cdn.glitch.global/df35b9e1-0fa8-49d1-b430-bed29251dfb5/gem_2.hdr?v=1675257556766', function ( texture ) {
+// new RGBELoader()
+//     .load( 'objects/test.hdr', function ( texture ) {
 
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      scene.environment = texture;
-} );
+//       texture.mapping = THREE.EquirectangularReflectionMapping
+//       scene.environment = texture;
+// } );
 
 
 // Objects
 const objectsDistance = 7
 
 let triangle
-loader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/threejs_logo.glb?v=1675285403141', function (gltf) {
+gltfLoader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/threejs_logo.glb?v=1675285403141', function (gltf) {
 
     scene.add(gltf.scene)
   
@@ -106,24 +99,18 @@ loader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/thre
           triangle.position.set(0, 2, 0)
           triangle.scale.set(0.5,0.5,0.5)
           meshGroup0.add(triangle)
-          meshGroup1.add(triangle.clone())
+          // meshGroup1.add(triangle.clone())
           meshGroup2.add(triangle.clone())
           meshGroup3.add(triangle.clone())
         }
     })
 })
 
-function loadGLBModel(url) {
-  return new Promise((resolve, reject) => {
-    gltfLoader.load(url, resolve, undefined, reject);
-  });
-}
 
 const meshGroup0 = new THREE.Group()
 const meshGroup1 = new THREE.Group()
 const meshGroup2 = new THREE.Group()
 const meshGroup3 = new THREE.Group()
-
 meshGroup0.position.x =   objectsDistance * -1
 meshGroup1.position.x =   objectsDistance * 0
 meshGroup2.position.x =   objectsDistance * 1
@@ -131,8 +118,11 @@ meshGroup3.position.x =   objectsDistance * 2
 
 
 scene.add(meshGroup0,meshGroup1, meshGroup2, meshGroup3)
-
 var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]  
+
+
+loadIconObject("/objects/cup.glb",meshGroup1,[0, 1, 0]);
+
 
 const sizes = {
     width: window.innerWidth,
@@ -166,38 +156,71 @@ scene.add(cameraGroup)
 
 // Base camera
 // const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 1, 100)
+const camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 10)
 camera.position.x = 0
 camera.position.y = 3
-camera.position.z = 6
+camera.position.z = 7
 scene.add(camera)
 
+camera.add(cameraLight)
 
 // const controls = new OrbitControls(camera, canvas)
 // controls.enableDamping = true
 
 
+// adding the buttons from javascript
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Create the "Forward" button
+  const forwardButton = document.createElement("div");
+  forwardButton.id = "next-button-forward";
+  forwardButton.className = "oval-button oval-button-forward";
+  forwardButton.textContent = "Forward";
+
+  // Create the "Backward" button
+  const backwardButton = document.createElement("div");
+  backwardButton.id = "next-button-backward";
+  backwardButton.className = "oval-button oval-button-backward";
+  backwardButton.textContent = "Backward";
+
+  // Append the buttons to the <body> element
+  document.body.appendChild(forwardButton);
+  document.body.appendChild(backwardButton);
+
+
+  // const forwardButton = document.querySelector('.oval-button-forward');
+  
+  // Add an event listener for the "click" event
+  forwardButton.addEventListener('click', function (){
+    manualNextProject(true);
+  });
+  
+  // const backwardsButton = document.querySelector('.oval-button-backward');
+  
+  // Add an event listener for the "click" event
+  backwardButton.addEventListener('click', function (){
+    manualNextProject(false);
+  });
+  
+});
+
+
+
 /**
  * Renderer
  */
-
-const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: "high-performance" }) // turn on antialias
+const container = document.createElement('div')
+document.body.appendChild(container)
+container.classList.add("threejs");
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }) // turn on antialias
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) //set pixel ratio
 renderer.setSize(window.innerWidth, window.innerHeight) // make it full screen
-renderer.toneMapping = THREE.LinearToneMapping
-renderer.toneMappingExposure = 1.2
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.5
 renderer.shadowMap.enabled = true; // Needs to be enabled
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-
-// const renderer = new THREE.WebGLRenderer({
-//     canvas: canvas,
-//     powerPreference: "high-performance",
-// })
-
-// renderer.setSize(sizes.width, sizes.height)
-// renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-// renderer.antialias = true;
+container.appendChild(renderer.domElement) // add the renderer to html div
 
 
 
@@ -226,11 +249,11 @@ const tick = () =>
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
 
-    // // Animate meshes
-    // for(const mesh of sectionMeshes)
-    // {
-    //     mesh.rotation.y += deltaTime * .2
-    // }
+    // Animate meshes
+    for(const mesh of sectionMeshes)
+    {
+        mesh.rotation.y += deltaTime * .5
+    }
 
     // if(triangle){
     //   triangle.rotation.y += deltaTime * .6
@@ -268,16 +291,17 @@ const mouse = new THREE.Vector2();
 
 function loadIconObject(fileLocation, groupName,positionArray){
 
-    gltfLoader.load(
-        fileLocation,
-        (gltf) => {
-            var object = gltf.scene;
-            
-            object.position.set(positionArray[0], positionArray[1], positionArray[2])
-            groupName.add(object)
-    })
-
-
+    gltfLoader.load(fileLocation, (gltf) => {
+      var object = gltf.scene;
+      object.traverse((obj) => {
+          if (obj.isMesh) {
+              obj.castShadow = true;
+              // obj.receiveShadow = true;
+          }
+      });
+      object.position.set(positionArray[0], positionArray[1], positionArray[2])
+      groupName.add(object);
+  });
 }
 
 
@@ -294,7 +318,6 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
 
   function mobileResize() {
-
     if(window.innerWidth < 900){
       meshGroup0.scale.set(1.25,1.25,1.25)
       meshGroup1.scale.set(1.25,1.25,1.25)
@@ -303,7 +326,6 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
       
     }else{
-      meshGroup0.scale.set(1,1,1)
       meshGroup1.scale.set(1,1,1)
       meshGroup2.scale.set(1,1,1)
       meshGroup3.scale.set(1,1,1)
@@ -314,20 +336,6 @@ function loadIconObject(fileLocation, groupName,positionArray){
     return window.innerWidth < 900;
   }
 
-  
-  const forwardButton = document.querySelector('.oval-button-forward');
-  
-  // Add an event listener for the "click" event
-  forwardButton.addEventListener('click', function (){
-    manualNextProject(true);
-  });
-  
-  const backwardsButton = document.querySelector('.oval-button-backward');
-  
-  // Add an event listener for the "click" event
-  backwardsButton.addEventListener('click', function (){
-    manualNextProject(false);
-  });
   
 
   // Function to handle the click event
@@ -376,14 +384,60 @@ function loadIconObject(fileLocation, groupName,positionArray){
   // Add an event listener to track mouse movement
 
   // Add an event listener to track mouse movement
-  window.addEventListener('mousemove', onMouseMove);
+  // window.addEventListener('mousemove', onMouseMove);
   
-  function onMouseMove(event) {
-    // Calculate the rotation angles based on mouse position
-    const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-    const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+  // function onMouseMove(event) {
+  //   // Calculate the rotation angles based on mouse position
+  //   const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+  //   const mouseY = (event.clientY / window.innerHeight) * 2 - 1;
   
-    // Apply the rotation to the object
-    meshGroup1.rotation.y = mouseX * 1;
-    meshGroup1.rotation.x = mouseY * .15;
+  //   // Apply the rotation to the object
+  //   meshGroup1.rotation.y = mouseX * 1;
+  //   meshGroup1.rotation.x = mouseY * .15;
+  // }
+
+
+// Define variables for mouse interaction
+let isDragging = false;
+let previousMousePosition = {
+  x: 0,
+  y: 0
+};
+
+// Add event listeners to track mouse interaction
+window.addEventListener('mousedown', onMouseDown);
+window.addEventListener('mousemove', onMouseMove);
+window.addEventListener('mouseup', onMouseUp);
+
+// Function to handle mouse down event
+function onMouseDown(event) {
+  isDragging = true;
+  previousMousePosition = {
+    x: event.clientX,
+    y: event.clientY
+  };
+}
+
+// Function to handle mouse move event
+function onMouseMove(event) {
+  if (isDragging) {
+    const deltaMouse = {
+      x: event.clientX - previousMousePosition.x,
+      y: event.clientY - previousMousePosition.y
+    };
+
+    // Apply rotation based on mouse movement
+    meshGroup1.rotation.x += deltaMouse.y * 0.001; // Adjust rotation sensitivity as needed
+    meshGroup1.rotation.y += deltaMouse.x * 0.01;
+
+    previousMousePosition = {
+      x: event.clientX,
+      y: event.clientY
+    };
   }
+}
+
+// Function to handle mouse up event
+function onMouseUp() {
+  isDragging = false;
+}
