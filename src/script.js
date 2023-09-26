@@ -40,7 +40,7 @@ cameraLight.position.set(0.5, 0, 0.866);
 
 
 const directionalLight = new THREE.DirectionalLight( "white", 0.1);
-directionalLight.position.set(-2, 3, 0);
+directionalLight.position.set(-2, 3, );
 
 scene.add(directionalLight);
 
@@ -48,8 +48,8 @@ directionalLight.castShadow = true;
 directionalLight.shadow.mapSize.width = 2048;  
 directionalLight.shadow.mapSize.height = 2048; 
 directionalLight.shadow.camera.near = 1;       
-directionalLight.shadow.camera.far = 20;      
-directionalLight.shadow.bias = -0.001;
+directionalLight.shadow.camera.far = 100;      
+directionalLight.shadow.bias = -0.01;
 // Remove the default ambient light from the scene
 
 
@@ -120,8 +120,11 @@ scene.add(meshGroup0,meshGroup1, meshGroup2, meshGroup3)
 var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]  
 
 
-loadIconObject("/objects/cup.glb",meshGroup1,[0, 0.5, 0])
-loadIconObject("/objects/test.glb",meshGroup2,[0, 1, 0]);
+
+loadIconObject("/objects/baglow.glb",meshGroup0,[0, 0.25, 0]);
+loadIconObject("/objects/phone.glb",meshGroup1,[0, 0.03, 0])
+loadIconObject("/objects/cup.glb",meshGroup2,[0, 1, 0]);
+loadIconObject("/objects/chocolate.glb",meshGroup3,[0, 1, 0]);
 
 
 
@@ -158,7 +161,7 @@ scene.add(cameraGroup)
 
 // Base camera
 // const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
-const camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 10)
+const camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height,1, 50)
 camera.position.x = 0
 camera.position.y = 3
 camera.position.z = 7
@@ -323,9 +326,10 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
       
     }else{
-      meshGroup1.scale.set(2,2,2)
-      meshGroup2.scale.set(0.1,0.1,0.1)
-      meshGroup3.scale.set(1,1,1)
+      meshGroup0.scale.set(0.1,0.1,0.1)
+      meshGroup1.scale.set(30,30,30)
+      meshGroup3.scale.set(0.1,0.1,0.1)
+      meshGroup2.scale.set(1,1,1)
     }
   }
     
@@ -333,16 +337,16 @@ function loadIconObject(fileLocation, groupName,positionArray){
     return window.innerWidth < 900;
   }
 
-  
-
   // Function to handle the click event
   function manualNextProject(forward) {
 
-    
+    console.log(forward)
     var xPosition = forward ? -7 : 7;
-    forward ? currentSection++ : currentSection--;
-    currentMesh = sectionMeshes[currentSection];
-    console.log(currentSection);
+
+    // TODO:
+    // forward ? currentSection++ : currentSection--;
+    // currentMesh = sectionMeshes[currentSection];
+    // console.log(currentSection);
 
     if(forward){
       sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
@@ -352,7 +356,8 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
     // sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x - xPosition;
     sectionMeshes = moveItems(sectionMeshes, forward)
-  
+    currentMesh = sectionMeshes[1];
+
     for(const mesh of sectionMeshes){
       // console.log("position: " +  mesh.position.y);
     
