@@ -13,11 +13,18 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
 
 //// DRACO LOADER TO LOAD DRACO COMPRESSED MODELS FROM BLENDER
+
+var loadingManager = new THREE.LoadingManager();
+var gltfLoader = new GLTFLoader(loadingManager);
+
+
 const dracoLoader = new DRACOLoader()
-const gltfLoader = new GLTFLoader()
+// const gltfLoader = new GLTFLoader()
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
 dracoLoader.setDecoderConfig({ type: 'js' })
 gltfLoader.setDRACOLoader(dracoLoader)
+
+
 
 /**
  * Debug
@@ -83,26 +90,26 @@ plane.rotation.x = -Math.PI /2
 
 
 // Objects
-const objectsDistance = 7
+const objectsDistance = 8
 
-let triangle
-gltfLoader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/threejs_logo.glb?v=1675285403141', function (gltf) {
+// let triangle
+// gltfLoader.load('https://cdn.glitch.global/84b42a01-59de-4a46-a133-517eb21aee3c/threejs_logo.glb?v=1675285403141', function (gltf) {
 
-    scene.add(gltf.scene)
+//     scene.add(gltf.scene)
   
-    gltf.scene.traverse((obj) => {
+//     gltf.scene.traverse((obj) => {
       
-        if (obj.isMesh) {
-          obj.castShadow = true
-          obj.receiveShadow = true
-          triangle = obj
-          triangle.position.set(0, 2, 0)
-          triangle.scale.set(0.5,0.5,0.5)
-          meshGroup0.add(triangle)
-          meshGroup3.add(triangle.clone())
-        }
-    })
-})
+//         if (obj.isMesh) {
+//           obj.castShadow = true
+//           obj.receiveShadow = true
+//           triangle = obj
+//           triangle.position.set(0, 2, 0)
+//           triangle.scale.set(0.5,0.5,0.5)
+//           meshGroup0.add(triangle)
+//           meshGroup3.add(triangle.clone())
+//         }
+//     })
+// })
 
 
 const meshGroup0 = new THREE.Group()
@@ -121,11 +128,10 @@ var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]
 
 
 
-loadIconObject("/objects/baglow.glb",meshGroup0,[0, 0.25, 0]);
-loadIconObject("/objects/phone.glb",meshGroup1,[0, 0.03, 0])
-loadIconObject("/objects/cup.glb",meshGroup2,[0, 1, 0]);
-loadIconObject("/objects/chocolate.glb",meshGroup3,[0, 1, 0]);
-
+loadIconObject("/objects/bag2.glb",meshGroup0,[0, 0.25, 0]);
+loadIconObject("/objects/phone.glb",meshGroup3,[0, 0.03, 0])
+loadIconObject("/objects/cuptest.glb",meshGroup1,[0, 1, 0]);
+loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/chocolate.glb",meshGroup2,[0, 1, 0]);
 
 
 
@@ -299,6 +305,7 @@ function loadIconObject(fileLocation, groupName,positionArray){
               // obj.receiveShadow = true;
           }
       });
+
       object.position.set(positionArray[0], positionArray[1], positionArray[2])
       groupName.add(object);
   });
@@ -326,10 +333,10 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
       
     }else{
-      meshGroup0.scale.set(0.1,0.1,0.1)
-      meshGroup1.scale.set(30,30,30)
-      meshGroup3.scale.set(0.1,0.1,0.1)
-      meshGroup2.scale.set(1,1,1)
+      meshGroup0.scale.set(10,10,10)
+      meshGroup3.scale.set(30,30,30)
+      meshGroup1.scale.set(1,1,1)
+      meshGroup2.scale.set(0.1,0.1,0.1)
     }
   }
     
@@ -341,7 +348,7 @@ function loadIconObject(fileLocation, groupName,positionArray){
   function manualNextProject(forward) {
 
     console.log(forward)
-    var xPosition = forward ? -7 : 7;
+    var xPosition = forward ? -1 * objectsDistance: objectsDistance;
 
     // TODO:
     // forward ? currentSection++ : currentSection--;
@@ -349,9 +356,9 @@ function loadIconObject(fileLocation, groupName,positionArray){
     // console.log(currentSection);
 
     if(forward){
-      sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + 7;
+      sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x + objectsDistance;
     }else{
-      sectionMeshes[sectionMeshes.length - 1].position.x = sectionMeshes[0].position.x - 7;
+      sectionMeshes[sectionMeshes.length - 1].position.x = sectionMeshes[0].position.x - objectsDistance;
     }
 
     // sectionMeshes[0].position.x = sectionMeshes[sectionMeshes.length - 1].position.x - xPosition;
@@ -404,7 +411,6 @@ let previousMousePosition = {
   x: 0,
   y: 0
 };
-
 // Add event listeners to track mouse interaction
 window.addEventListener('mousedown', onMouseDown);
 window.addEventListener('mousemove', onMouseMove);
