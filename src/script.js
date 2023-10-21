@@ -128,9 +128,9 @@ var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]
 
 
 
-loadIconObject("/objects/bag2.glb",meshGroup0,[0, 0.25, 0]);
+loadIconObject("/objects/bag.glb",meshGroup0,[0, 0.25, 0]);
 loadIconObject("/objects/phone.glb",meshGroup3,[0, 0.03, 0])
-loadIconObject("/objects/cuptest.glb",meshGroup1,[0, 1, 0]);
+loadIconObject("/objects/cup.glb",meshGroup1,[0, 1, 0]);
 loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/chocolate.glb",meshGroup2,[0, 1, 0]);
 
 
