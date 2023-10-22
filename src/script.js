@@ -42,12 +42,12 @@ scene.background = new THREE.Color("lightgrey")
 
 
 // Directional Light
-const cameraLight = new THREE.DirectionalLight( "white", 0.75);
+const cameraLight = new THREE.DirectionalLight( "white", 1);
 cameraLight.position.set(0.5, 0, 0.866);
 
 
 const directionalLight = new THREE.DirectionalLight( "white", 0.1);
-directionalLight.position.set(-2, 3, );
+directionalLight.position.set(-2, 3, 0);
 
 scene.add(directionalLight);
 
@@ -128,10 +128,11 @@ var sectionMeshes = [meshGroup0, meshGroup1, meshGroup2, meshGroup3]
 
 
 
-loadIconObject("/objects/bag.glb",meshGroup0,[0, 0.25, 0]);
-loadIconObject("/objects/phone.glb",meshGroup3,[0, 0.03, 0])
-loadIconObject("/objects/cup.glb",meshGroup1,[0, 1, 0]);
-loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/chocolate.glb",meshGroup2,[0, 1, 0]);
+loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/bag.glb",meshGroup0,[0, 0.25, 0]);
+loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/phone.glb",meshGroup1,[0, 0.03, 0])
+loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/chocolate.glb",meshGroup2,[0, 7, 0]);
+loadIconObject("https://micah-site.s3.us-west-2.amazonaws.com/objects/cup.glb",meshGroup3,[0, 1, 0]);
+
 
 
 
@@ -179,49 +180,21 @@ camera.add(cameraLight)
 // controls.enableDamping = true
 
 
-// adding the buttons from javascript
-document.addEventListener("DOMContentLoaded", function () {
 
-  // Create the "Forward" button
-  const forwardButton = document.createElement("div");
-  forwardButton.id = "next-button-forward";
-  forwardButton.className = "oval-button oval-button-forward";
-  forwardButton.textContent = "Forward";
-
-  // Create the "Backward" button
-  const backwardButton = document.createElement("div");
-  backwardButton.id = "next-button-backward";
-  backwardButton.className = "oval-button oval-button-backward";
-  backwardButton.textContent = "Backward";
-
-  // Append the buttons to the <body> element
-  document.body.appendChild(forwardButton);
-  document.body.appendChild(backwardButton);
-
-
-  // const forwardButton = document.querySelector('.oval-button-forward');
-  
-  // Add an event listener for the "click" event
-  forwardButton.addEventListener('click', function (){
-    manualNextProject(true);
-  });
-  
-  // const backwardsButton = document.querySelector('.oval-button-backward');
-  
-  // Add an event listener for the "click" event
-  backwardButton.addEventListener('click', function (){
-    manualNextProject(false);
-  });
-  
-});
 
 
 
 /**
  * Renderer
  */
+
+
+
 const container = document.createElement('div')
 document.body.appendChild(container)
+// const firstSection = document.querySelector('section');
+// firstSection.appendChild(container);
+
 container.classList.add("threejs");
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }) // turn on antialias
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) //set pixel ratio
@@ -233,6 +206,36 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 container.appendChild(renderer.domElement) // add the renderer to html div
 
+// const forwardButton = document.createElement("div");
+// forwardButton.id = "next-button-forward";
+// forwardButton.className = "oval-button oval-button-forward";
+// forwardButton.textContent = "Forward";
+
+
+// const container2 = document.createElement('div')
+// container2.classList.add("center-container");
+// container2.appendChild(forwardButton)
+
+// firstSection.appendChild(container2)
+
+
+// // adding the buttons from javascript
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Create the "Forward" button
+  const forwardButton = document.createElement("div");
+  forwardButton.id = "next-button-forward";
+  forwardButton.className = "oval-button oval-button-forward";
+  forwardButton.textContent = "Forward";
+
+  // Append the buttons to the <body> element
+  document.body.appendChild(forwardButton);
+
+  // Add an event listener for the "click" event
+  forwardButton.addEventListener('click', function (){
+    manualNextProject(true);
+  });
+});
 
 
 /**
@@ -333,10 +336,10 @@ function loadIconObject(fileLocation, groupName,positionArray){
 
       
     }else{
-      meshGroup0.scale.set(10,10,10)
-      meshGroup3.scale.set(30,30,30)
-      meshGroup1.scale.set(1,1,1)
-      meshGroup2.scale.set(0.1,0.1,0.1)
+      meshGroup0.scale.set(12,12,12)
+      meshGroup1.scale.set(30,30,30)
+      meshGroup2.scale.set(0.09,0.09,0.09)
+      meshGroup3.scale.set(1.5,1.5,1.5)
     }
   }
     
